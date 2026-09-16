@@ -1,0 +1,22 @@
+# Arquivo de variáveis de ambiente (contém chaves de API secretas)
+.env
+
+# Ambientes virtuais do Python
+venv/
+.venv/
+env/
+
+# Cache e arquivos compilados do Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Configurações de editores e IDEs
+.vscode/
+.idea/
+
+# Arquivos do sistema operacional
+.DS_Store
+Thumbs.db
