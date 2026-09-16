@@ -1,6 +1,84 @@
-/* Estilos base - personalize para seu squad */
+/* ==========================================================================
+   PAGE: DEPOIMENTOS (DEPOIMENTOS.CSS)
+   ========================================================================== */
 
-body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont,
-               'Segoe UI', sans-serif;
+/* Container Principal */
+main {
+  flex: 1;
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+}
+
+/* Introdução */
+.section-depoimentos-intro {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.section-depoimentos-intro h2 {
+  color: #154bb8;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.section-depoimentos-intro p {
+  color: #607d8b;
+  font-size: 1.05rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Grid de Depoimentos */
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.8rem;
+}
+
+/* Card de Depoimento */
+.testimonial-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.8rem;
+  box-shadow: 0 4px 20px rgba(39, 110, 241, 0.06);
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.testimonial-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(39, 110, 241, 0.12);
+  border-color: #276ef1;
+}
+
+/* Cabeçalho do Card (Nome e Cargo) */
+.testimonial-header {
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.testimonial-header h3 {
+  color: #154bb8;
+  font-size: 1.15rem;
+  margin-bottom: 0.2rem;
+}
+
+.testimonial-role {
+  color: #276ef1;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* Texto da Citação */
+.testimonial-text {
+  color: #4a5568;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  font-style: italic;
 }

@@ -1,213 +1,136 @@
-:root {
-  --primary-blue: #276ef1;
-  --primary-hover: #1f57c3;
-  --bg-page: #f0f4f8;
-  --bg-white: #ffffff;
-  --text-main: #333333;
-  --text-muted: #666666;
-  --border-color: #d1d9e6;
-  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.12);
-}
+/* ==========================================================================
+   PAGE: CASE DE SUCESSO (CASE-DE-SUCESSO.CSS)
+   ========================================================================== */
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Segoe UI', Arial, sans-serif;
-}
-
-body {
-  background-color: var(--bg-page);
-  color: var(--text-main);
-  line-height: 1.6;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-header {
-  background: var(--bg-white);
-  padding: 1rem 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid var(--border-color);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.logo h1 {
-  font-size: 1.2rem;
-  color: var(--primary-blue);
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.main-nav ul {
-  list-style: none;
-  display: flex;
-  gap: 10px;
-}
-
-.main-nav a {
-  text-decoration: none;
-  color: var(--text-muted);
-  font-weight: 600;
-  padding: 0.6rem 1.2rem;
-  border-radius: 25px;
-  transition: 0.3s;
-  font-size: 0.9rem;
-}
-
-.main-nav a:hover {
-  color: var(--primary-blue);
-  background-color: #eef4ff;
-}
-
-.main-nav a.active {
-  background-color: var(--primary-blue);
-  color: white;
-}
-
+/* Container Principal */
 main {
   flex: 1;
-  width: 100%;
   max-width: 900px;
-  margin: 0 auto;
-  padding: 3rem 1.5rem;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem;
 }
 
-section {
-  background: var(--bg-white);
-  padding: 2.5rem;
-  border-radius: 12px;
-  border: 1px solid #dae1e7;
-  box-shadow: var(--shadow-card);
-  margin-bottom: 2rem;
-  transition: all 0.3s ease;
-}
-
-section:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 30px rgba(39, 110, 241, 0.15);
-  border-color: var(--primary-blue);
-}
-
-section h3 {
-  color: var(--primary-blue);
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-  border-bottom: 2px solid #f0f4f8;
-  padding-bottom: 0.5rem;
-  display: inline-block;
-}
-
-section p {
-  color: var(--text-muted);
-  margin-bottom: 1rem;
-  text-align: justify;
-}
-
-section ul {
-  list-style: disc inside;
-  padding-left: 1rem;
-}
-
-section ul li {
-  position: static;
-  padding-left: 0;
-  margin-bottom: 0.8rem;
-  color: var(--text-muted);
-}
-
+/* Introdução Principal */
 .case-intro {
   text-align: center;
-  border-top: 5px solid var(--primary-blue);
+  margin-bottom: 0.5rem;
 }
 
 .case-intro h2 {
-  font-size: 2rem;
-  color: var(--text-main);
-  margin-bottom: 1rem;
+  color: #154bb8;
+  font-size: 2.2rem;
+  margin-bottom: 0.8rem;
+  line-height: 1.2;
 }
 
 .case-intro p {
+  color: #607d8b;
   font-size: 1.1rem;
-  max-width: 700px;
+  line-height: 1.6;
+  max-width: 780px;
   margin: 0 auto;
-  text-align: center;
 }
 
+/* Estilo Base das Seções do Case */
+.case-contexto,
+.case-desafio,
+.case-solucao,
+.case-resultados,
 .case-depoimento {
-  background-color: transparent;
-  box-shadow: none;
-  border: none;
-  padding: 0;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 2rem 2.5rem;
+  box-shadow: 0 4px 20px rgba(39, 110, 241, 0.06);
+  border: 1px solid #e2e8f0;
 }
 
-.case-depoimento:hover {
-  transform: none;
+/* Títulos Internos das Seções */
+main section h3 {
+  color: #154bb8;
+  font-size: 1.35rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #eaf2ff;
+  padding-bottom: 0.5rem;
 }
 
-.case-depoimento h3 {
-  background: var(--bg-white);
-  padding: 0.5rem 1rem;
-  border: 1px solid #dae1e7;
-  border-radius: 8px;
-  margin-bottom: 1.5rem;
+/* Parágrafos e Listas Generais */
+main section p {
+  color: #4a5568;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 0.8rem;
+}
+
+main section p:last-child {
+  margin-bottom: 0;
+}
+
+/* Listas de Desafios e Resultados */
+.case-desafio ul,
+.case-resultados ul {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 1rem;
+}
+
+.case-desafio li,
+.case-resultados li {
+  color: #4a5568;
+  font-size: 0.98rem;
+  line-height: 1.5;
+  margin-bottom: 0.6rem;
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.case-desafio li::before {
+  content: "•";
+  color: #ef4444;
+  font-weight: bold;
+  font-size: 1.3rem;
+  position: absolute;
+  left: 0;
+  top: -2px;
+}
+
+.case-resultados li::before {
+  content: "✓";
+  color: #10b981;
+  font-weight: bold;
+  font-size: 1.1rem;
+  position: absolute;
+  left: 0;
+  top: -1px;
+}
+
+/* Cartões de Depoimentos do Case */
+.case-depoimento {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
 }
 
 .case-depoimento-card {
-  background: var(--bg-white);
-  padding: 2rem;
-  border-radius: 12px;
-  border: 1px solid #dae1e7;
-  border-left: 6px solid var(--primary-blue);
-  box-shadow: var(--shadow-card);
-  margin-bottom: 1.5rem;
-  position: relative;
-  transition: transform 0.3s ease;
-}
-
-.case-depoimento-card:hover {
-  transform: scale(1.02);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  background: #f8fafc;
+  border-left: 4px solid #276ef1;
+  border-radius: 6px;
+  padding: 1.2rem;
+  border-top: 1px solid #e2e8f0;
+  border-right: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .case-depoimento-texto {
   font-style: italic;
-  font-size: 1.05rem;
-  color: #555;
-  margin-bottom: 1rem;
-}
-
-.case-depoimento-texto::before {
-  content: "“";
-  font-family: serif;
-  font-size: 3rem;
-  color: #e0e0e0;
-  position: absolute;
-  top: 10px;
-  right: 20px;
-  line-height: 1;
+  color: #334155 !important;
+  margin-bottom: 0.5rem !important;
 }
 
 .case-depoimento-autor {
-  text-align: right;
-  font-weight: 700;
-  color: var(--primary-blue);
-  font-size: 0.9rem;
-  margin-bottom: 0;
-}
-
-footer {
-  text-align: center;
-  padding: 2rem;
-  font-size: 0.9rem;
-  color: var(--text-muted);
-  background: var(--bg-white);
-  border-top: 1px solid var(--border-color);
-  margin-top: auto;
+  color: #276ef1 !important;
+  font-weight: 600;
+  font-size: 0.9rem !important;
 }
