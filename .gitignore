@@ -1,5 +1,6 @@
 # Arquivo de variáveis de ambiente (contém chaves de API secretas)
 .env
+.env.local
 
 # Ambientes virtuais do Python
 venv/
@@ -20,3 +21,6 @@ __pycache__/
 # Arquivos do sistema operacional
 .DS_Store
 Thumbs.db
+
+node_modules/
+dist/

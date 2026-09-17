@@ -1,63 +1,125 @@
-// Base de Conhecimento extraída estritamente do conteúdo do Squad F
-const KNOWLEDGE_BASE = [
-  {
-    keywords: ["quem somos", "sobre", "equipe", "integrantes", "membros", "squad f"],
-    response: "O Squad F é uma equipe de desenvolvedores formada por Daniel (Front-end), Edson (QA/Back-end), Felipe (UI/UX) e Elisson (Gerente de Projetos). Atuamos com soluções web, educação e acessibilidade."
-  },
-  {
-    keywords: ["projetos", "plataforma", "dashboard", "site institucional", "leitura"],
-    response: "Nossos projetos incluem: 1) Plataforma de Aprendizagem Web; 2) Dashboard de Indicadores Escolares; 3) Site Institucional para Escola; 4) Ferramenta de Apoio à Leitura."
-  },
-  {
-    keywords: ["servicos", "serviços", "o que fazem", "desenvolvimento", "consultoria"],
-    response: "Oferecemos: Desenvolvimento de Sites, Desenvolvimento de Sistemas Web, Consultoria Educacional, Design de Interfaces (UI/UX), Implementação de Dashboards e Suporte Técnico."
-  },
-  {
-    keywords: ["habilidades", "tecnologias", "html", "css", "js", "javascript", "git"],
-    response: "Nossas habilidades incluem HTML5 (Avançado), CSS3 (Intermediário/Avançado), JavaScript (Intermediário), Git & GitHub (Intermediário), Design Responsivo e Comunicação em Equipe."
-  },
-  {
-    keywords: ["contato", "falar", "email", "e-mail", "mensagem"],
-    response: "Você pode entrar em contato conosco através do formulário na nossa página de Contato enviando seu nome, e-mail e mensagem."
-  },
-  {
-    keywords: ["case", "sucesso", "escola", "resultado"],
-    response: "Nosso Case de Sucesso ajudou uma escola parceira a centralizar avisos, calendários e notas, modernizando a comunicação entre alunos, pais e coordenação."
-  }
+import { GoogleGenAI } from "https://esm.run/@google/genai";
+
+// Leitura das variáveis do arquivo .env via Vite
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+const modelName = import.meta.env.VITE_GEMINI_MODEL || "gemini-3.6-flash";
+
+// Inicializa o cliente oficial do Gemini com a chave de ambiente
+const ai = new GoogleGenAI({ apiKey });
+
+// Lista de páginas do site que a IA deve ler e mapear
+const PAGES_TO_SCRAPE = [
+  "index.html",
+  "../templates/sobre.html",
+  "../templates/contato.html",
+  "../templates/projetos.html",
+  "../templates/habilidades.html",
+  "../templates/servicos.html",
+  "../templates/depoimentos.html",
+  "../templates/case-de-sucesso.html"
 ];
 
-// Mensagem padrão para evitar alucinações
-const DEFAULT_RESPONSE = "Desculpe, não tenho essa informação solicitada. Posso responder apenas dúvidas sobre a equipe Squad F, nossos projetos, serviços, habilidades e formas de contato.";
+let cachedSiteData = "";
 
-// Função para buscar a resposta na Base de Conhecimento
-function getBotResponse(userMessage) {
-  const cleanInput = userMessage.toLowerCase().trim();
+/**
+ * Lê o HTML de todas as páginas listadas, remove tags desnecessárias
+ * e limpa o texto para enviar como contexto à IA.
+ */
+async function fetchAllPagesContent() {
+  if (cachedSiteData) return cachedSiteData;
 
-  for (const item of KNOWLEDGE_BASE) {
-    const matched = item.keywords.some(keyword => cleanInput.includes(keyword));
-    if (matched) {
-      return item.response;
+  let combinedText = "";
+
+  for (const page of PAGES_TO_SCRAPE) {
+    try {
+      // Usa caminho relativo direto para buscar o arquivo no Vite
+      const response = await fetch(`./${page}`, { cache: "no-store" });
+      
+      if (response.ok) {
+        const htmlText = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlText, "text/html");
+        
+        // Remove scripts, estilos, cabeçalhos/menus e o próprio widget do chat
+        doc.querySelectorAll("script, style, header, nav, #chat-widget-container").forEach(el => el.remove());
+        
+        const pageCleanText = doc.body.textContent.replace(/\s+/g, ' ').trim();
+        
+        // Só adiciona se extraiu algum texto real da página
+        if (pageCleanText.length > 0) {
+          combinedText += `\n--- CONTEÚDO DA PÁGINA (${page}) ---\n${pageCleanText}\n`;
+        }
+      } else {
+        console.warn(`Página não encontrada (${response.status}): ${page}`);
+      }
+    } catch (error) {
+      console.warn(`Erro ao ler a página: ${page}`, error);
     }
   }
 
-  return DEFAULT_RESPONSE;
+  cachedSiteData = combinedText;
+  return combinedText;
 }
 
-// Injeção do HTML do Chat no DOM ao carregar a página
+/**
+ * Envia a mensagem do usuário juntamente com o contexto raspado para a API do Gemini.
+ */
+async function getGeminiResponse(userMessage) {
+  if (!apiKey) {
+    console.error("VITE_GEMINI_API_KEY não foi encontrada no import.meta.env");
+    return "Erro: A chave VITE_GEMINI_API_KEY não foi encontrada no arquivo .env.";
+  }
+
+  const siteContent = await fetchAllPagesContent();
+
+  const systemInstruction = `
+Você é o Assistente Virtual oficial do Squad F.
+Sua única função é responder dúvidas de visitantes usando EXCLUSIVAMENTE o conteúdo extraído das páginas do nosso site fornecido abaixo.
+
+REGRAS OBRIGATÓRIAS:
+1. Responda apenas com base nas informações presentes no texto fornecido.
+2. Se a resposta para a pergunta NÃO estiver no texto fornecido abaixo, responda EXATAMENTE:
+   "Desculpe, não encontrei essa informação nas páginas do nosso site. Posso ajudar com dúvidas sobre a equipe, projetos ou serviços do Squad F."
+3. Seja amigável, direto e objective.
+
+CONTEÚDO EXTRAÍDO DO SITE EM TEMPO REAL:
+${siteContent}
+`;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: modelName,
+      contents: userMessage,
+      config: {
+        systemInstruction: systemInstruction,
+      }
+    });
+
+    return response.text;
+  } catch (error) {
+    // Imprime o erro detalhado no Console (F12) para identificação rápida
+    console.error("Erro detalhado da API do Gemini:", error);
+    return `Erro na API: ${error.message || "Falha na autenticação ou permissão da chave."}`;
+  }
+}
+
+/**
+ * Renderiza o widget de chat na tela e gerencia a submissão de mensagens.
+ */
 document.addEventListener("DOMContentLoaded", () => {
   const chatHTML = `
     <div id="chat-widget-container">
       <button id="chat-toggle-btn">🤖 Assistente FIA</button>
       <div id="chat-box" class="chat-hidden">
         <div class="chat-header">
-          <span>Assistente FIA</span>
+          <span>Assistente Squad F</span>
           <button id="chat-close-btn">&times;</button>
         </div>
         <div id="chat-messages" class="chat-messages">
-          <div class="message bot-message">Olá! Sou o assistente do Squad F. Como posso te ajudar com nosso site?</div>
+          <div class="message bot-message">Olá! Sou o assistente do Squad F. Posso tirar dúvidas lendo o conteúdo do nosso site!</div>
         </div>
         <form id="chat-form" class="chat-input-area">
-          <input type="text" id="chat-input" placeholder="Pergunte sobre nossos serviços..." autocomplete="off" required>
+          <input type="text" id="chat-input" placeholder="Pergunte sobre a equipe ou projetos..." autocomplete="off" required>
           <button type="submit">Enviar</button>
         </form>
       </div>
@@ -65,7 +127,6 @@ document.addEventListener("DOMContentLoaded", () => {
   `;
   document.body.insertAdjacentHTML("beforeend", chatHTML);
 
-  // Seleção de Elementos
   const toggleBtn = document.getElementById("chat-toggle-btn");
   const closeBtn = document.getElementById("chat-close-btn");
   const chatBox = document.getElementById("chat-box");
@@ -73,25 +134,21 @@ document.addEventListener("DOMContentLoaded", () => {
   const chatInput = document.getElementById("chat-input");
   const chatMessages = document.getElementById("chat-messages");
 
-  // Alternar Visibilidade
   toggleBtn.addEventListener("click", () => chatBox.classList.toggle("chat-hidden"));
   closeBtn.addEventListener("click", () => chatBox.classList.add("chat-hidden"));
 
-  // Processar Mensagens
-  chatForm.addEventListener("submit", (e) => {
+  chatForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const text = chatInput.value.trim();
     if (!text) return;
 
-    // Mensagem do Usuário
     appendMessage(text, "user-message");
     chatInput.value = "";
 
-    // Resposta do Bot com delay simular digitação
-    setTimeout(() => {
-      const botReply = getBotResponse(text);
-      appendMessage(botReply, "bot-message");
-    }, 400);
+    const typingDiv = appendMessage("Consultando as páginas do site...", "bot-message");
+
+    const botReply = await getGeminiResponse(text);
+    typingDiv.textContent = botReply;
   });
 
   function appendMessage(text, className) {
@@ -100,5 +157,6 @@ document.addEventListener("DOMContentLoaded", () => {
     msgDiv.textContent = text;
     chatMessages.appendChild(msgDiv);
     chatMessages.scrollTop = chatMessages.scrollHeight;
+    return msgDiv;
   }
 });
