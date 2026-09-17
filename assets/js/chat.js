@@ -32,6 +32,7 @@ let cachedSiteData = "";
 
 /**
  * Lê o HTML de todas as páginas listadas e extrai o texto limpo
+ * É o leitor do assistente
  */
 async function fetchAllPagesContent() {
   if (cachedSiteData && cachedSiteData.trim().length > 0) {
